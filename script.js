@@ -1,89 +1,89 @@
-             var turn = document.getElementById("turn"),
-                 // boxes => all boxes
-                 // X_or_O => to set X or O into the box
-                 boxes = document.querySelectorAll("#main div"),
-                 X_or_O = 0;
+var origBoard;
+const huPlayer = '0';
+const aiPlayer = 'X';
+const winCombos = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [6, 4, 2],
+]
 
-             function selectWinnerBoxes(b1, b2, b3) {
-                 b1.classList.add("win");
-                 b2.classList.add("win");
-                 b3.classList.add("win");
-                 turn.innerHTML = b1.innerHTML + " Won Congrat";
-                 turn.style.fontSize = "40px";
-             }
+const cells = document.querySelectorAll('.celda');
+startGame();
 
-             function getWinner() {
+function startGame() {
+    document.querySelector(".finaldeljuego").style.display = "none";
+    origBoard = Array.from(Array(9).keys());
+    for (var i = 0; i < cells.length; i++) {
+        cells[i].innerText = '';
+        cells[i].style.removeProperty('background-color');
+        cells[i].addEventListener('click', turnClick, false);
+    }
+}
 
-                 var box1 = document.getElementById("box1"),
-                     box2 = document.getElementById("box2"),
-                     box3 = document.getElementById("box3"),
-                     box4 = document.getElementById("box4"),
-                     box5 = document.getElementById("box5"),
-                     box6 = document.getElementById("box6"),
-                     box7 = document.getElementById("box7"),
-                     box8 = document.getElementById("box8"),
-                     box9 = document.getElementById("box9");
+function turnClick(square) {
+    if (typeof origBoard[square.target.id] == 'number') {
+        turn(square.target.id, huPlayer)
+        if (!checkTie()) turn(bestSpot(), aiPlayer);
+    }
+}
 
-                 // get all posibilites
-                 if (box1.innerHTML !== "" && box1.innerHTML === box2.innerHTML && box1.innerHTML === box3.innerHTML)
-                     selectWinnerBoxes(box1, box2, box3);
+function turn(squareId, player) {
+    origBoard[squareId] = player;
+    document.getElementById(squareId).innerText = player;
+    let gameWon = checkWin(origBoard, player)
+    if (gameWon) gameOver(gameWon)
+}
 
-                 if (box4.innerHTML !== "" && box4.innerHTML === box5.innerHTML && box4.innerHTML === box6.innerHTML)
-                     selectWinnerBoxes(box4, box5, box6);
+function checkWin(board, player) {
+    let plays = board.reduce((a, e, i) =>
+        (e === player) ? a.concat(i) : a, []);
+    let gameWon = null;
+    for (let [index, win] of winCombos.entries()) {
+        if (win.every(elem => plays.indexOf(elem) > -1)) {
+            gameWon = { index: index, player: player };
+            break;
+        }
+    }
+    return gameWon;
+}
 
-                 if (box7.innerHTML !== "" && box7.innerHTML === box8.innerHTML && box7.innerHTML === box9.innerHTML)
-                     selectWinnerBoxes(box7, box8, box9);
+function gameOver(gameWon) {
+    for (let index of winCombos[gameWon.index]) {
+        document.getElementById(index).style.backgroundColor =
+            gameWon.player == huPlayer ? "greenyellow" : "red ";
+    }
+    for (var i = 0; i < cells.length; i++) {
+        cells[i].removeEventListener('click', turnClick, false);
+    }
+    declareWinner(gameWon.player == huPlayer ? "You win!" : "You lose.");
+}
 
-                 if (box1.innerHTML !== "" && box1.innerHTML === box4.innerHTML && box1.innerHTML === box7.innerHTML)
-                     selectWinnerBoxes(box1, box4, box7);
+function declareWinner(who) {
+    document.querySelector(".finaldeljuego").style.display = "block";
+    document.querySelector(".finaldeljuego .text").innerText = who;
+}
 
-                 if (box2.innerHTML !== "" && box2.innerHTML === box5.innerHTML && box2.innerHTML === box8.innerHTML)
-                     selectWinnerBoxes(box2, box5, box8);
+function emptySquares() {
+    return origBoard.filter(s => typeof s == 'number');
+}
 
-                 if (box3.innerHTML !== "" && box3.innerHTML === box6.innerHTML && box3.innerHTML === box9.innerHTML)
-                     selectWinnerBoxes(box3, box6, box9);
+function bestSpot() {
+    return emptySquares()[0];
+}
 
-                 if (box1.innerHTML !== "" && box1.innerHTML === box5.innerHTML && box1.innerHTML === box9.innerHTML)
-                     selectWinnerBoxes(box1, box5, box9);
-
-                 if (box3.innerHTML !== "" && box3.innerHTML === box5.innerHTML && box3.innerHTML === box7.innerHTML)
-                     selectWinnerBoxes(box3, box5, box7);
-
-             }
-
-
-             // set event onclick
-             for (var i = 0; i < boxes.length; i++) {
-                 boxes[i].onclick = function() {
-                     // not allow to change the value of the box
-                     if (this.innerHTML !== "X" && this.innerHTML !== "O") {
-                         if (X_or_O % 2 === 0) {
-                             console.log(X_or_O);
-                             this.innerHTML = "X";
-                             turn.innerHTML = "O Turn Now";
-                             getWinner();
-                             X_or_O += 1;
-
-                         } else {
-                             console.log(X_or_O);
-                             this.innerHTML = "O";
-                             turn.innerHTML = "X Turn Now";
-                             getWinner();
-                             X_or_O += 1;
-                         }
-                     }
-
-                 };
-             }
-
-             function replay() {
-
-                 for (var i = 0; i < boxes.length; i++) {
-                     boxes[i].classList.remove("win");
-                     boxes[i].innerHTML = "";
-                     turn.innerHTML = "Play";
-                     turn.style.fontSize = "25px";
-
-                 }
-
-             }
+function checkTie() {
+    if (emptySquares().length == 0) {
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].style.backgroundColor = "green";
+            cells[i].removeEventListener('click', turnClick, false);
+        }
+        declareWinner("Tie Game!")
+        return true;
+    }
+    return false;
+}

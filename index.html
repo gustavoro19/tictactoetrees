@@ -10,22 +10,27 @@
 
 <body>
 
-    <div class="container" id="main">
-        <span id="turn">Play</span>
-        <!-- show X or O on div click -->
-        <div class="box" id="box1"></div>
-        <div class="box" id="box2"></div>
-        <div class="box" id="box3"></div>
-        <div class="box" id="box4"></div>
-        <div class="box" id="box5"></div>
-        <div class="box" id="box6"></div>
-        <div class="box" id="box7"></div>
-        <div class="box" id="box8"></div>
-        <div class="box" id="box9"></div>
+    <table>
+        <tr>
+            <td class="celda" id="0"></td>
+            <td class="celda" id="1"></td>
+            <td class="celda" id="2"></td>
+        </tr>
+        <tr>
+            <td class="celda" id="3"></td>
+            <td class="celda" id="4"></td>
+            <td class="celda" id="5"></td>
+        </tr>
+        <tr>
+            <td class="celda" id="6"></td>
+            <td class="celda" id="7"></td>
+            <td class="celda" id="8"></td>
+        </tr>
+    </table>
+    <div class="finaldeljuego">
+        <div class="text"></div>
     </div>
-    <!-- Play Again And Reset All Info -->
-    <button onclick="replay()">Play Again</button>
-
+    <button onclick="startGame()">Jugar de nuevo</button>
     <script src="script.js"></script>
 
 </body>

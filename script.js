@@ -60,7 +60,7 @@ function gameOver(gameWon) {
     for (var i = 0; i < cells.length; i++) {
         cells[i].removeEventListener('click', turnClick, false);
     }
-    declareWinner(gameWon.player == huPlayer ? "You win!" : "You lose.");
+    declareWinner(gameWon.player == huPlayer ? "Ganaste!" : "Perdiste!");
 }
 
 function declareWinner(who) {
@@ -79,10 +79,10 @@ function bestSpot() {
 function checkTie() {
     if (emptySquares().length == 0) {
         for (var i = 0; i < cells.length; i++) {
-            cells[i].style.backgroundColor = "green";
+            cells[i].style.backgroundColor = "blue";
             cells[i].removeEventListener('click', turnClick, false);
         }
-        declareWinner("Tie Game!")
+        declareWinner("Juego Empatado!")
         return true;
     }
     return false;
